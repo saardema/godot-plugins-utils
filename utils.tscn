@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://1ugkgu5p4tbe"]
+
+[ext_resource type="Script" uid="uid://0fhx5vgxoilb" path="res://addons/utils/utils.gd" id="1_j3req"]
+
+[node name="Utils" type="Node3D"]
+script = ExtResource("1_j3req")
+
+[node name="Timers" type="Node3D" parent="."]
