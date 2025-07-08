@@ -1,9 +1,9 @@
-## Returns time elapsed in seconds
+## Returns time elapsed between laps in milliseconds
 class Stopwatch:
-	var start_time: int
+	var start_time: int = Time.get_ticks_usec()
 
-	func _init():
-		start_time = Time.get_ticks_usec()
-
-	func stop() -> float:
-		return (Time.get_ticks_usec() - start_time) * 0.000001
+	func lap() -> float:
+		var now := Time.get_ticks_usec()
+		var timing := (now - start_time) * 0.001
+		start_time = now
+		return timing
