@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://chty465bfrg12"]
+
+[ext_resource type="Script" uid="uid://bfdkd44bahp7t" path="res://addons/utils/plotter/plotter.gd" id="1_umldr"]
+[ext_resource type="Script" uid="uid://cw0tq4e5ojlfr" path="res://addons/utils/plotter/plotter_grid.gd" id="2_viyai"]
+
+[node name="Plotter" type="Panel"]
+clip_contents = true
+custom_minimum_size = Vector2(200, 5)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_umldr")
+show_avg = false
+metadata/_custom_type_script = "uid://bfdkd44bahp7t"
+
+[node name="Grid" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0.069999985, 0.069999985, 0.069999985, 0)
+script = ExtResource("2_viyai")
+metadata/_edit_lock_ = true
