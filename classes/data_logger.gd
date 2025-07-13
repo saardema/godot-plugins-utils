@@ -2,7 +2,7 @@
 class_name DataLogger
 extends RefCounted
 
-var values: Array[float]
+var values: PackedFloat32Array
 var refresh_rate: int
 var min: float:
 	get: return values[_min_deque[0]]
@@ -25,6 +25,7 @@ var _last_update: int
 var _current_time: int
 var _count_valid_values: int
 var average_range: int = -1
+var _count_limit: int = -1
 
 # MinMax deque
 var _min_deque: Array[int]
@@ -58,11 +59,11 @@ func _init(count: int, refresh_rate_ms: int = 0, downsampling_amount: int = 1):
 	refresh_rate = refresh_rate_ms
 
 func append(value: float):
+	pointer = (pointer + 1) % _count
+
 	values[pointer] = value
 	_add_to_min_deque(value)
 	_add_to_max_deque(value)
-
-	pointer = (pointer + 1) % _count
 
 	if _count_valid_values < _count:
 		_count_valid_values += 1
@@ -72,7 +73,6 @@ func append(value: float):
 	if _current_time > _last_update + refresh_rate:
 		_last_update = _current_time
 		_average_cache_invalid = true
-var _count_limit: int = -1
 
 func set_count_limit(limit: int):
 	_count = min(values.size(), max(0, limit))
@@ -86,7 +86,7 @@ func reset():
 	pointer = 0
 
 func get_relative(index: int) -> float:
-	return values[pointer - index]
+	return values[(pointer - index) % _count]
 
 func interpolate(index: float) -> float:
 	var i: int = int(index) % _count
