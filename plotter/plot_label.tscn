@@ -1,0 +1,49 @@
+[gd_scene load_steps=3 format=3 uid="uid://ca1glv4q4w0pb"]
+
+[ext_resource type="Script" uid="uid://b8y40l3qp7b3r" path="res://addons/utils/plotter/channel/channel_label.gd" id="1_sccgv"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_mtb45"]
+font_size = 18
+outline_size = 16
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 0
+
+[node name="PlotLabel" type="MarginContainer"]
+modulate = Color(1, 1, 1, 0.36862746)
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -135.0
+offset_bottom = 56.0
+grow_horizontal = 0
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 15
+script = ExtResource("1_sccgv")
+
+[node name="VBoxContainer" type="BoxContainer" parent="."]
+layout_mode = 2
+alignment = 2
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Label name"
+label_settings = SubResource("LabelSettings_mtb45")
+horizontal_alignment = 2
+
+[node name="Control" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(15.09, 0)
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="VBoxContainer/Control"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0.49050307, 0.909918, 1)

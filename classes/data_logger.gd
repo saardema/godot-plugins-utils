@@ -27,13 +27,14 @@ var _count_valid_values: int
 var average_range: int = -1
 var _count_limit: int = -1
 
-# MinMax deque
-var _min_deque: Array[int]
-var _max_deque: Array[int]
+
+#region MinMax deque
+var _min_deque: Array[int] = [0]
+var _max_deque: Array[int] = [0]
 var _deque_window_size: int
 
 func _add_to_min_deque(value: float):
-	while _min_deque.size() > 0 and _min_deque[0] <= pointer - _deque_window_size:
+	while _min_deque.size() > 0 and (pointer - _min_deque[0] + _count) % _count >= _deque_window_size:
 		_min_deque.pop_front()
 
 	while _min_deque.size() > 0 and values[_min_deque[-1]] >= value:
@@ -42,28 +43,30 @@ func _add_to_min_deque(value: float):
 	_min_deque.push_back(pointer)
 
 func _add_to_max_deque(value: float):
-	while _max_deque.size() > 0 and _max_deque[0] <= pointer - _deque_window_size:
+	while _max_deque.size() > 0 and (pointer - _max_deque[0] + _count) % _count >= _deque_window_size:
 		_max_deque.pop_front()
 
 	while _max_deque.size() > 0 and values[_max_deque[-1]] <= value:
 		_max_deque.pop_back()
 
 	_max_deque.push_back(pointer)
+#endregion MinMax deque
+
 
 func _init(count: int, refresh_rate_ms: int = 0, downsampling_amount: int = 1):
 	count = max(1, count)
+
 	values.resize(count)
 	downsampling = downsampling_amount
 	_count = count
-	_deque_window_size = _count >> 1
+	_deque_window_size = _count - 10
 	refresh_rate = refresh_rate_ms
 
 func append(value: float):
-	pointer = (pointer + 1) % _count
-
 	values[pointer] = value
 	_add_to_min_deque(value)
 	_add_to_max_deque(value)
+	pointer = (pointer + 1) % _count
 
 	if _count_valid_values < _count:
 		_count_valid_values += 1
@@ -85,8 +88,26 @@ func reset():
 	_average_cache = 0
 	pointer = 0
 
-func get_relative(index: int) -> float:
-	return values[(pointer - index) % _count]
+func append_array(array: PackedFloat32Array):
+	for value in array:
+		append(value)
+	# values.append_array(array)
+	# pointer = (pointer + array.size()) % _count
+	# _count_valid_values = min(_count_valid_values + array.size(), _count)
+
+func get_slice(size: int) -> PackedFloat32Array:
+	if size < pointer:
+		return values.slice(pointer - size, pointer)
+
+	var values_slice := values.slice(_count - size + pointer, _count)
+	values_slice.append_array(values.slice(0, pointer))
+
+	return values_slice
+
+
+func get_relative(index: int = 0) -> float:
+	index = min(index, _count - 1)
+	return values[(pointer - index - 1)]
 
 func interpolate(index: float) -> float:
 	var i: int = int(index) % _count

@@ -1,11 +1,33 @@
-[gd_scene load_steps=3 format=3 uid="uid://chty465bfrg12"]
+[gd_scene load_steps=7 format=3 uid="uid://mg1muypmihai"]
 
-[ext_resource type="Script" uid="uid://bfdkd44bahp7t" path="res://addons/utils/plotter/plotter.gd" id="1_umldr"]
-[ext_resource type="Script" uid="uid://cw0tq4e5ojlfr" path="res://addons/utils/plotter/plotter_grid.gd" id="2_viyai"]
+[ext_resource type="Script" uid="uid://bfdkd44bahp7t" path="res://addons/utils/plotter/plotter.gd" id="1_xt4dd"]
+[ext_resource type="Script" uid="uid://cw0tq4e5ojlfr" path="res://addons/utils/plotter/plotter_grid.gd" id="2_7q2c7"]
+[ext_resource type="Script" uid="uid://b165c2i2vbeqt" path="res://addons/utils/plotter/plotter_gui.gd" id="3_mtb45"]
+[ext_resource type="PackedScene" uid="uid://blv2uug0en4f5" path="res://addons/utils/plotter/dotplot/dot_plot.tscn" id="3_mwoj7"]
+[ext_resource type="Texture2D" uid="uid://ddjralm46lhmn" path="res://icons/font-awesome/svgs/solid/sitemap.svg" id="4_p6dbo"]
+[ext_resource type="Script" uid="uid://7hvgildhldj1" path="res://addons/utils/plotter/plot.gd" id="6_5ju1o"]
 
-[node name="Plotter" type="ColorRect"]
+[node name="Plotter" type="Control"]
 clip_contents = true
-custom_minimum_size = Vector2(200, 200)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1920.0
+offset_bottom = -1080.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 1
+script = ExtResource("1_xt4dd")
+colors = Array[Color]([Color(0, 0.5019608, 0, 1), Color(1, 0.64705884, 0, 1), Color(0.007999993, 0.602, 0.8, 1), Color(0.6901961, 0.35686275, 0.84313726, 1), Color(0.84053004, 0.50376433, 0.8726666, 1), Color(0.69385356, 0.5131976, 0.6238025, 1), Color(0.6906481, 0.5053163, 0.6620185, 1), Color(0.5785593, 0.67612916, 0.74448645, 1), Color(0.83169985, 0.8875618, 0.9819322, 1), Color(0.77252173, 0.85480225, 0.88455826, 1)])
+grid_resolution = 0.40612623
+grid_contrast = 0.65291417
+background_color = Color(0.038397167, 0.038397167, 0.03839716, 1)
+scroll_sensitivity = 1.233
+
+[node name="Grid" type="Control" parent="."]
+custom_minimum_size = Vector2(15.99, 9.86)
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -13,20 +35,91 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-color = Color(0, 0, 0, 1)
-script = ExtResource("1_umldr")
-test_plot = 1.0
-grid_resolution = 0.17677675
-grid_contrast = 2.0
-background_color = Color(0.066755, 0.066755, 0.066755, 1)
+mouse_filter = 1
+script = ExtResource("2_7q2c7")
 
-[node name="Grid" type="Control" parent="."]
+[node name="DotPlot" parent="." instance=ExtResource("3_mwoj7")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
+dot_size = 31.369999999995343
+default_alpha = 0.057
+persistence = true
+
+[node name="PlotterGUI" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
-script = ExtResource("2_viyai")
-metadata/_edit_lock_ = true
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+script = ExtResource("3_mtb45")
+
+[node name="BoxContainer2" type="BoxContainer" parent="PlotterGUI"]
+layout_mode = 2
+vertical = true
+
+[node name="BoxContainer" type="BoxContainer" parent="PlotterGUI/BoxContainer2"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="MenuBar" type="MenuBar" parent="PlotterGUI/BoxContainer2/BoxContainer"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="PopupMenuPlotWiring" type="PopupMenu" parent="PlotterGUI/BoxContainer2/BoxContainer/MenuBar"]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Setup channels"
+hide_on_item_selection = false
+allow_search = false
+
+[node name="PopupMenuPlotMode" type="PopupMenu" parent="PlotterGUI/BoxContainer2/BoxContainer/MenuBar"]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Plot mode"
+allow_search = false
+
+[node name="ButtonChannels" type="Button" parent="PlotterGUI/BoxContainer2/BoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(59.19, 44)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+focus_mode = 0
+icon = ExtResource("4_p6dbo")
+icon_alignment = 1
+
+[node name="LabelContainer" type="FlowContainer" parent="PlotterGUI/BoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(213.29, 87.23)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 3
+vertical = true
+reverse_fill = true
+
+[node name="PlotsContainer" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+mouse_behavior_recursive = 1
+
+[node name="Plot" type="Control" parent="PlotsContainer"]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("6_5ju1o")
