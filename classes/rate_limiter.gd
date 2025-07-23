@@ -77,7 +77,7 @@ func exec(force: bool = false):
 	var should_exec := force
 
 	if time >= _scheduled_timestamp:
-		_scheduled_timestamp = time + rate
+		_scheduled_timestamp = max(time, time + rate)
 
 		if time - _last_trigger_timestamp > rate:
 			should_exec = _mode == Mode.REGULAR
