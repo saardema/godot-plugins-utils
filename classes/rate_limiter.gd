@@ -61,11 +61,11 @@ func set_mode(mode: Mode):
 	_call_body = _mode in [Mode.REGULAR, Mode.SUB_CONCLUDE]
 	_call_tail = _mode in [Mode.CONCLUDE, Mode.SUB_CONCLUDE]
 
-	if _call_tail and not _timer:
+	if _call_tail and not _timer and _timers_node:
 		_timer = Timer.new()
 		_timers_node.add_child(_timer)
 		_timer.one_shot = true
-		_timer.timeout.connect(self._on_timer_timeout)
+		_timer.timeout.connect(exec.bind(true))
 
 
 ## Will execute callable if more than [member rate] seconds has passed,
@@ -77,9 +77,9 @@ func exec(force: bool = false):
 	var should_exec := force
 
 	if time >= _scheduled_timestamp:
-		_scheduled_timestamp = max(time, time + rate)
+		_scheduled_timestamp = time + rate
 
-		if time - _last_trigger_timestamp > rate:
+		if not force and time - _last_trigger_timestamp > rate:
 			should_exec = _mode == Mode.REGULAR
 
 		elif _call_body:
@@ -91,8 +91,10 @@ func exec(force: bool = false):
 		callback.call()
 
 	elif _call_tail:
-		_timer.start(rate)
-
-
-func _on_timer_timeout():
-	exec(true)
+		if _timer:
+			_timer.start(rate)
+		elif _timers_node:
+			_timer = Timer.new()
+			_timers_node.add_child(_timer)
+			_timer.one_shot = true
+			_timer.timeout.connect(exec.bind(true))
