@@ -1,13 +1,18 @@
-#@tool
+# @tool
 class_name Plotter
 extends Control
-const DotPlot = preload("uid://bhvg6f71s8lm8")
-const ChannelLabel = preload("channel/channel_label.gd")
-const Plot = preload("uid://7hvgildhldj1")
-const LABEL_SCENE = preload("uid://ca1glv4q4w0pb")
-@onready var dot_plot: Control = $DotPlot
 
-@onready var label_container: Container = %LabelContainer
+#region Head
+
+signal draw_mode_changed()
+
+const DotPlot = preload("uid://bhvg6f71s8lm8")
+const Plot = preload("uid://7hvgildhldj1")
+const Channel = preload('channel/channel.gd')
+const Connection = preload('connection/connection.gd')
+const ConnectionsState = preload('state.gd')
+
+@onready var dot_plot: DotPlot = $DotPlot
 @onready var grid: Control = $Grid
 @onready var plotter_gui: MarginContainer = $PlotterGUI
 @onready var plots_container: Control = %PlotsContainer
@@ -22,22 +27,22 @@ const MAX_X_SCALE := MAX_Y_SCALE
 const MAX_OFFSET: float = 1000
 const MAX_CHANNELS: int = 10
 
-signal draw_mode_changed()
-
 enum DrawMode {Time, Lines, Dots}
 enum GridMode {Time, XY}
 
-#region Exported Variables
 @export_group('Plot')
-@export var draw_mode: DrawMode = DrawMode.Lines:
+@export var draw_mode: DrawMode:
 	set(v):
+		if draw_mode != v:
+			draw_mode = v
+			_on_draw_mode_changed()
 		draw_mode = v
-		_on_draw_mode_changed()
 
 @export var colors: Array[Color] = [Color.WEB_GREEN, Color.ORANGE]
-@export_range(-1, 1) var test_plot: float = 0.5
-@export_range(-1, MAX_CHANNELS) var avg_index: int
-@export_range(0, 1) var avg_range: float = 0.5
+
+#endregion Head
+
+#region Grid
 
 @export_group("Grid")
 @export_range(0, 1) var grid_alpha: float = 0.3:
@@ -63,7 +68,103 @@ enum GridMode {Time, XY}
 
 @export_range(0, 2) var scroll_sensitivity: float = 1
 
-#endregion Exported Variables
+#endregion Grid
+
+
+#region Connections
+
+var state := ConnectionsState.new()
+
+# var connections: Dictionary[Feature, Connection]
+
+enum Feature {X, Y, Color, Size, Width, Alpha}
+
+const draw_mode_features: Dictionary[DrawMode, Array] = {
+	DrawMode.Time: [
+		Feature.Y
+	],
+	DrawMode.Lines: [
+		Feature.X,
+		Feature.Y,
+		Feature.Width,
+		Feature.Color,
+		Feature.Alpha
+	],
+	DrawMode.Dots: [
+		Feature.X,
+		Feature.Y,
+		Feature.Size,
+		Feature.Color,
+		Feature.Alpha
+	],
+}
+
+#endregion Connections
+
+
+#region Channels
+
+signal channel_added(channel: Channel)
+signal channel_removed(channel_name: StringName)
+
+var channels: Dictionary[StringName, Channel] = {}
+
+func write_multi_channel(channel: Channel, data: PackedFloat32Array):
+	channel.write_singles(data)
+
+func write_channel(channel: Channel, data: float):
+	channel.write_single(data, 0)
+
+func set_channel_buffer(channel: Channel, data: PackedFloat32Array, sub_channel: int = 0):
+	channel.set_buffer(data, sub_channel)
+
+func create_channel(channel_name: String, sub_channels := 1) -> Channel:
+	if channel_name in channels:
+		push_warning("Channel already exists: " + channel_name)
+		return
+
+	var channel: Channel = Channel.new(channel_name, sub_channels)
+	channels[channel_name] = channel
+	channel.color = colors.pop_front()
+
+	# if channel.channels.size() == 2:
+	# 	connections[Feature.X] = {'channel': channel, 'sub_channel': 0}
+	# 	connections[Feature.Y] = {'channel': channel, 'sub_channel': 1}
+
+	# if channel.channel_name == 'Output':
+	# 	connections[Feature.Color] = {'channel': channel, 'sub_channel': 0}
+
+	# elif channel.channel_name == 'Loss':
+	# 	connections[Feature.Y] = {'channel': channel, 'sub_channel': 0}
+
+
+	channel_added.emit(channel)
+
+	return channel
+
+func add_channel(channel: Channel):
+	if channel.channel_name in channels:
+		push_warning("Channel already exists: " + channel.channel_name)
+		return
+
+	channels[channel.channel_name] = channel
+
+	if not channel.color:
+		channel.color = colors.pop_front()
+
+	channel_added.emit(channel)
+
+func remove_channel(channel: Channel):
+	if channel.name in channels:
+		var index := channels.find
+		channels.erase(channel.name)
+		channel.label.queue_free()
+		channel_removed.emit(channel.name)
+
+#endregion Channels
+
+
+#region Visual
 
 var plot_pos := Vector2(0.1, 1.1):
 	set(v):
@@ -79,89 +180,6 @@ var plot_scale := Vector2(1.2, 1.2):
 			plot_scale.x = clamp(v.x, MIN_X_SCALE, MAX_X_SCALE)
 		_update_grid()
 
-
-var connections: Dictionary[Plotter.PlotFeature, Dictionary] = {}
-
-const draw_mode_features: Dictionary[DrawMode, Array] = {
-	DrawMode.Time: [
-		PlotFeature.Y
-	],
-	DrawMode.Lines: [
-		PlotFeature.X,
-		PlotFeature.Y,
-		PlotFeature.Width,
-		PlotFeature.Color,
-		PlotFeature.Alpha
-	],
-	DrawMode.Dots: [
-		PlotFeature.X,
-		PlotFeature.Y,
-		PlotFeature.Size,
-		PlotFeature.Color,
-		PlotFeature.Alpha
-	],
-}
-
-enum PlotFeature {X, Y, Color, Size, Width, Alpha}
-
-#region Channels
-
-signal channel_added(channel: PlotChannel)
-signal channel_removed(channel_name: StringName)
-
-var channels: Dictionary[StringName, PlotChannel] = {}
-
-func write_multi_channel(channel: PlotChannel, data: PackedFloat32Array):
-	channel.write_singles(data)
-
-func write_channel(channel: PlotChannel, data: float):
-	channel.write_single(data, 0)
-
-func set_channel(channel: PlotChannel, data: PackedFloat32Array, sub_channel: int = 0):
-	channel.set_buffer(data, sub_channel)
-
-func create_channel(channel_name: String, sub_channels := 1) -> PlotChannel:
-	if channel_name in channels:
-		push_warning("Channel already exists: " + channel_name)
-		return
-
-	var channel: PlotChannel = PlotChannel.new(channel_name, sub_channels)
-	channels[channel_name] = channel
-	channel.color = colors.pop_front()
-
-	if channel.channel_count == 2:
-		connections[PlotFeature.X] = {'channel': channel, 'sub_channel': 0}
-		connections[PlotFeature.Y] = {'channel': channel, 'sub_channel': 1}
-
-	if channel.channel_name == 'Output':
-		connections[PlotFeature.Color] = {'channel': channel, 'sub_channel': 0}
-
-	elif channel.channel_name == 'Loss':
-		connections[PlotFeature.Y] = {'channel': channel, 'sub_channel': 0}
-
-
-	channel_added.emit(channel)
-
-	return channel
-
-func add_channel(channel: PlotChannel):
-	if channel.name in channels:
-		push_warning("Channel already exists: " + channel.name)
-		return
-
-	channels[channel.name] = channel
-
-	channel_added.emit(channel)
-
-func remove_channel(channel: PlotChannel):
-	if channel.name in channels:
-		var index := channels.find
-		channels.erase(channel.name)
-		channel.label.queue_free()
-		channel_removed.emit(channel.name)
-
-#endregion Channels
-
 func _update_grid():
 	if grid: grid.set_grid(
 		plot_pos,
@@ -175,6 +193,10 @@ func _update_grid():
 func _on_draw_mode_changed():
 	if draw_mode == DrawMode.Time:
 		plot_pos = plot_scale
+
+	if plot: plot.visible = draw_mode == DrawMode.Time
+	if dot_plot: dot_plot.visible = draw_mode == DrawMode.Dots
+
 	_update_grid()
 	draw_mode_changed.emit()
 
@@ -194,15 +216,22 @@ func clear():
 func _on_resize():
 	_update_grid()
 
+#endregion Visual
+
+
+#region Virtuals
+
 func _ready():
+	state.identifier = name
+	channel_added.connect(func(_c): state.hydrate(channels))
 	_on_draw_mode_changed()
 	resized.connect(_on_resize)
 
 	plot = Plot.new()
-	plot.init("", Color.WHITE)
+	plot.init()
 	plots_container.add_child(plot)
 
-	dot_plot.init("", Color.WHITE)
+	dot_plot.init(Color.WHITE)
 
 	var hue := randf()
 	for i in MAX_CHANNELS:
@@ -211,27 +240,16 @@ func _ready():
 			var color := Color.from_hsv(hue, 1, .7)
 			colors.append(color)
 
+	plotter_gui.init()
+
 
 func _process(delta: float):
 	if zoom_enabled: auto_zoom()
 
-	# phase.x = fmod(phase.x + delta * 1, 1)
-	# phase.y = fmod(phase.y + delta * 1.601, 1)
-
-	# for name in channels:
-	# 	if channels[name] is PlotSingleChannel:
-	# 		channels[name].write(phase.x * 10)
-	# 	else:
-	# 		channels[name].write([sin(phase.x * TAU), sin(phase.y * TAU), 0, 0])
-
-	# for name in channels:
-	# 	DebugTools.write(name, channels[name].get_frame(), true, 2)
-
-	plot.visible = draw_mode == DrawMode.Time
-	dot_plot.visible = draw_mode != DrawMode.Time
-
-	if draw_mode == DrawMode.Time and connections.has(PlotFeature.Y):
-		plot.set_needle(connections[PlotFeature.Y].channel.read_single())
+	if draw_mode == DrawMode.Time:
+		if state.connections.has(Feature.Y):
+			plot.color
+			plot.set_needle(state.connections[Feature.Y].read_single(channels))
 		plot.scroll(delta, plot_scale, plot_pos.y)
 		return
 
@@ -242,16 +260,18 @@ func _process(delta: float):
 		for feature in draw_mode_features[draw_mode]:
 			var values: PackedFloat32Array
 
-			if connections.has(feature):
-				values = connections[feature].channel.get_buffer(connections[feature].sub_channel)
+			if state.connections.has(feature):
+				values = state.connections[feature].get_buffer()
 				packet_size = max(packet_size, values.size())
 
 			packet.append(values)
 
-		if packet[0].size() > 0:
+		if packet_size > 0:
 			dot_plot.plot_dots(packet, packet_size)
 
 		dot_plot.update_transform(plot_scale, plot_pos)
+
+#endregion Virtuals
 
 
 #region Auto Zoom

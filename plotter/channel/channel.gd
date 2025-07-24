@@ -1,30 +1,47 @@
 ## Stores and provides an arbitrary stream of scalar or multidimensional float data
 # Data contained is flushed when read
 
-class_name PlotChannel
+signal sub_channel_added(channel: BaseChannel)
+signal sub_channel_removed(channel_name: StringName)
 
-const PlotBaseChannel = preload('plot_base_channel.gd')
+const BaseChannel = preload('base_channel.gd')
 
-var channels: Array[PlotBaseChannel]
+var channels: Array[BaseChannel]
 var channel_name: StringName
 var color := Color.WHITE
 var enabled: bool = true
-var channel_count: int = 1
 
 var max_size: int = 256:
 	set(v):
 		max_size = clamp(v, 1, 2048)
 
 func _init(name: StringName, sub_channels := 2, max_buffer_size := 256):
-	channel_count = sub_channels
 	max_size = max_buffer_size
 	channel_name = name
+	for i in sub_channels: add_sub_channel()
 
-	for i in sub_channels:
-		var sub_name := "%s (%d)" % [channel_name, i + 1]
-		var sub_channel := PlotBaseChannel.new(sub_name, max_buffer_size)
-		sub_channel.color = color
-		channels.append(sub_channel)
+
+func add_sub_channel():
+	var sub_name := "%s (%d)" % [channel_name, channels.size() + 1]
+	var sub_channel := BaseChannel.new(sub_name, max_size)
+	sub_channel.color = color
+	channels.append(sub_channel)
+	sub_channel_added.emit(sub_channel)
+
+
+func set_channel_count(count: int):
+	if count < 1:
+		push_warning("Channel count must be at least 1")
+		return
+
+	if count > channels.size():
+		for i in count - channels.size():
+			add_sub_channel()
+
+	elif count < channels.size():
+		for i in channels.size() - count:
+			var removed_channel := channels.pop_back()
+			sub_channel_removed.emit(removed_channel.channel_name)
 
 
 func is_full() -> bool:

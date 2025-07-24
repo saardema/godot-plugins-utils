@@ -1,0 +1,86 @@
+[gd_scene load_steps=7 format=3 uid="uid://djllrtii1p722"]
+
+[ext_resource type="Script" uid="uid://dj1gomuuouspb" path="res://addons/utils/plotter/gui/plotter_gui.gd" id="1_c52p7"]
+[ext_resource type="Texture2D" uid="uid://d4hhmnn3ay341" path="res://icons/used/icon_graph.tres" id="3_3aok2"]
+[ext_resource type="Script" uid="uid://yaht78tdq2bk" path="res://addons/utils/plotter/gui/feature_list.gd" id="3_dw4n0"]
+[ext_resource type="Script" uid="uid://d1llxevklwmrn" path="res://addons/utils/plotter/gui/channel_list.gd" id="3_yj0jy"]
+[ext_resource type="Texture2D" uid="uid://c8hi4fmg6efs7" path="res://icons/used/icon_network.tres" id="4_nnugj"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_dw4n0"]
+allow_unpress = true
+
+[node name="PlotterGUI" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+script = ExtResource("1_c52p7")
+
+[node name="MainContainer" type="BoxContainer" parent="."]
+layout_mode = 2
+vertical = true
+
+[node name="TopContainer" type="BoxContainer" parent="MainContainer"]
+custom_minimum_size = Vector2(0, 68.63)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="MenuBar" type="MenuBar" parent="MainContainer/TopContainer"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+
+[node name="PopupMenuDrawMode" type="PopupMenu" parent="MainContainer/TopContainer/MenuBar"]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Mode"
+allow_search = false
+
+[node name="GridContainer" type="GridContainer" parent="MainContainer/TopContainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+columns = 3
+
+[node name="FeatureList" type="GridContainer" parent="MainContainer/TopContainer/GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+columns = 8
+script = ExtResource("3_dw4n0")
+
+[node name="ButtonFeatureConfig" type="Button" parent="MainContainer/TopContainer/GridContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(59.19, 59.22)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_dw4n0")
+icon = ExtResource("3_3aok2")
+icon_alignment = 1
+
+[node name="ButtonChannels" type="Button" parent="MainContainer/TopContainer/GridContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(59.19, 59.22)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+toggle_mode = true
+icon = ExtResource("4_nnugj")
+icon_alignment = 1
+
+[node name="ChannelList" type="GridContainer" parent="MainContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+script = ExtResource("3_yj0jy")

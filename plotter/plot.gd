@@ -11,21 +11,22 @@ var point_idx: int
 var plot_scale: Vector2
 var plot_position: Vector2
 var last_scale: Vector2
-const resolution: int = 60
+const resolution: int = 30
 const inv_resolution: float = 1.0 / resolution
 var segment_count: int = 10
 var logging_enabled: bool = true
 const line_width: int = 3
 var update_timer: float
-var plot_name: String
+
 
 func _init():
 	visibility_changed.connect(_on_visibility_changed)
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 
+
 func _on_visibility_changed():
-	if not visible:
+	if not visible and segments.size():
 		segment_idx = 0
 		point_idx = 0
 		plot_position.x = 0
@@ -35,9 +36,7 @@ func _on_visibility_changed():
 		segments[0].fill(Vector2(size.x / plot_scale.x, 0))
 
 
-func init(name_: String, plot_color := Color.WHITE):
-	plot_name = name_
-	color = plot_color
+func init():
 	logger = DataLogger.new(resolution * segment_count, 1000.0 / resolution, 0)
 	logger.average_range = 0.05 * resolution * segment_count
 	resized.connect(rescale)
@@ -107,7 +106,6 @@ func rescale():
 
 func _draw():
 	if segments.size() == 0: return
-
 
 	var pos := plot_position
 	pos.x -= inv_resolution * 2

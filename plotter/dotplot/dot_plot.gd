@@ -1,3 +1,4 @@
+@tool
 extends Control
 
 @onready var renderer: Control = %Renderer
@@ -39,7 +40,7 @@ var visible_point_count: int
 		else:
 			sub_viewport.render_target_clear_mode = SubViewport.CLEAR_MODE_ALWAYS
 
-func init(name_: String, plot_color := Color.WHITE):
+func init(plot_color := Color.WHITE):
 	color = plot_color
 	clear()
 	resized.connect(blank)
@@ -59,11 +60,11 @@ func clear():
 	visible_point_count = 0
 	total_point_count = 0
 	resize_buffers()
-	DebugTools.print('Cleared')
+	# DebugTools.print('Cleared')
 	blank()
 
 func resize_buffers():
-	DebugTools.print('Resizing buffer to %d' % [total_point_count])
+	# DebugTools.print('Resizing buffer to %d' % [total_point_count])
 	x_values.resize(total_point_count)
 	y_values.resize(total_point_count)
 	points.resize(total_point_count)
