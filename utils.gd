@@ -2,7 +2,8 @@
 
 extends Control
 
-static var Stopwatch = preload('./classes/stopwatch.gd').Stopwatch
+const Stopwatch = preload('classes/stopwatch.gd')
+static var Math = preload('classes/math.gd')
 
 func _ready():
 	RateLimiter._timers_node = $Timers
