@@ -1,0 +1,199 @@
+[gd_scene load_steps=11 format=3 uid="uid://jjwd6sb3hsd1"]
+
+[ext_resource type="Script" uid="uid://c26u8678s2h7p" path="res://addons/utils/plotter/gui/components/toggle_label/toggle_label.gd" id="1_b0dv7"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_gkdqb"]
+resource_local_to_scene = true
+font_size = 24
+font_color = Color(1, 1, 1, 0.3)
+shadow_size = 0
+shadow_color = Color(1, 1, 1, 0.23529412)
+shadow_offset = Vector2(0.389, 1.936)
+stacked_outline_count = 1
+stacked_shadow_count = 2
+stacked_outline_0/color = Color(0, 0, 0, 0.49019608)
+stacked_shadow_0/offset = Vector2(0, 1)
+stacked_shadow_0/color = Color(0.65628314, 0.6562866, 0.6562832, 0.24705882)
+stacked_shadow_0/outline_size = 5
+stacked_shadow_1/offset = Vector2(0, 3)
+stacked_shadow_1/color = Color(0, 0, 0, 0.5764706)
+stacked_shadow_1/outline_size = 11
+
+[sub_resource type="Gradient" id="Gradient_7hbej"]
+offsets = PackedFloat32Array(0, 0.37084872, 0.5184502, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0.81960785, 1, 1, 1, 0, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_0ppue"]
+gradient = SubResource("Gradient_7hbej")
+width = 10
+height = 1
+fill_from = Vector2(0.26268658, 0.13432837)
+
+[sub_resource type="Gradient" id="Gradient_qgyin"]
+offsets = PackedFloat32Array(0, 0.78044283, 0.8800738)
+colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_7hbej"]
+gradient = SubResource("Gradient_qgyin")
+width = 1
+fill_from = Vector2(1, 1)
+
+[sub_resource type="Gradient" id="Gradient_wc0ch"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0, 0.0498155, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.05882353, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_qgyin"]
+gradient = SubResource("Gradient_wc0ch")
+width = 1
+use_hdr = true
+fill_from = Vector2(1, 1)
+
+[sub_resource type="Gradient" id="Gradient_iggsu"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0.24538745, 0.5479705, 0.7878229)
+colors = PackedColorArray(1, 1, 1, 0, 1.584296, 1.584296, 1.584296, 0.07450981, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_iggsu"]
+gradient = SubResource("Gradient_iggsu")
+width = 1
+fill_from = Vector2(1, 1)
+
+[node name="ToggleLabel" type="MarginContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(55, 55)
+offset_right = 97.0
+offset_bottom = 55.0
+size_flags_vertical = 4
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+script = ExtResource("1_b0dv7")
+indicator_mode = 3
+text = "Output"
+color = Color(0.39718986, 0.2345882, 1, 1)
+background_color = Color(0.09239701, 0.092397094, 0.092397034, 1)
+
+[node name="Background" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+color = Color(0.09239701, 0.092397094, 0.092397034, 1)
+
+[node name="IndicatorBottom" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 0
+
+[node name="ColorRect" type="ColorRect" parent="IndicatorBottom"]
+layout_mode = 2
+color = Color(0.39718986, 0.2345882, 1, 1)
+
+[node name="MainContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="Content" type="BoxContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="MainContainer/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 18
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainContainer/Content/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="IconContainer" type="BoxContainer" parent="MainContainer/Content/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="MainContainer/Content/MarginContainer/HBoxContainer/IconContainer"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="MainContainer/Content/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+z_index = 2
+layout_mode = 2
+size_flags_vertical = 1
+text = "Output"
+label_settings = SubResource("LabelSettings_gkdqb")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="IndicatorRight" type="Control" parent="MainContainer/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(14.01, 0)
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="MainContainer/Content/IndicatorRight"]
+layout_mode = 0
+offset_right = 14.0
+offset_bottom = 60.0
+color = Color(0.15, 0.15, 0.15, 1)
+
+[node name="TextureRect" type="TextureRect" parent="MainContainer/Content/IndicatorRight"]
+layout_mode = 0
+offset_left = -6.41
+offset_right = 3.6500092
+offset_bottom = 60.0
+size_flags_horizontal = 0
+texture = SubResource("GradientTexture2D_0ppue")
+expand_mode = 1
+
+[node name="Shadow" type="TextureRect" parent="MainContainer"]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.43137255)
+custom_minimum_size = Vector2(0, 12.11)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 8
+texture = SubResource("GradientTexture2D_7hbej")
+expand_mode = 1
+
+[node name="Highlight" type="MarginContainer" parent="MainContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 7
+
+[node name="TextureRect" type="TextureRect" parent="MainContainer/Highlight"]
+layout_mode = 2
+texture = SubResource("GradientTexture2D_qgyin")
+expand_mode = 1
+
+[node name="TextureRect2" type="TextureRect" parent="MainContainer/Highlight"]
+custom_minimum_size = Vector2(0, 5.87)
+layout_mode = 2
+size_flags_vertical = 8
+texture = SubResource("GradientTexture2D_iggsu")
+expand_mode = 1

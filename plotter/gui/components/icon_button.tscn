@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://bj6shlpr02ma3"]
+
+[ext_resource type="Texture2D" uid="uid://fg851iaq6c06" path="res://icons/used/icon-visible.svg" id="1_gbxb6"]
+
+[node name="IconButton" type="Button"]
+custom_minimum_size = Vector2(63, 63)
+size_flags_horizontal = 0
+size_flags_vertical = 0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+toggle_mode = true
+button_pressed = true
+action_mode = 0
+icon = ExtResource("1_gbxb6")
+icon_alignment = 1

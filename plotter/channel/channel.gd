@@ -1,32 +1,34 @@
 ## Stores and provides an arbitrary stream of scalar or multidimensional float data
 # Data contained is flushed when read
+const Channel = preload('channel.gd')
 
-signal sub_channel_added(channel: BaseChannel)
-signal sub_channel_removed(channel_name: StringName)
+signal sub_channel_added(channel: Channel)
+signal sub_channel_removed(channel: Channel, sub_channel: int)
 
 const BaseChannel = preload('base_channel.gd')
 
 var channels: Array[BaseChannel]
-var channel_name: StringName
-var color := Color.WHITE
-var enabled: bool = true
+var name: StringName
+var color: Color
+var ring_buffer: bool = true
 
-var max_size: int = 256:
+var max_size: int:
 	set(v):
 		max_size = clamp(v, 1, 2048)
 
-func _init(name: StringName, sub_channels := 2, max_buffer_size := 256):
+func _init(channel_name: StringName, sub_channels := 1, max_buffer_size := 256, as_ring_buffer := true):
 	max_size = max_buffer_size
-	channel_name = name
+	name = channel_name
+	ring_buffer = as_ring_buffer
 	for i in sub_channels: add_sub_channel()
 
 
 func add_sub_channel():
-	var sub_name := "%s (%d)" % [channel_name, channels.size() + 1]
-	var sub_channel := BaseChannel.new(sub_name, max_size)
+	var sub_name := "%s (%d)" % [name, channels.size() + 1]
+	var sub_channel := BaseChannel.new(sub_name, max_size, ring_buffer)
 	sub_channel.color = color
 	channels.append(sub_channel)
-	sub_channel_added.emit(sub_channel)
+	sub_channel_added.emit(self )
 
 
 func set_channel_count(count: int):
@@ -40,8 +42,8 @@ func set_channel_count(count: int):
 
 	elif count < channels.size():
 		for i in channels.size() - count:
-			var removed_channel := channels.pop_back()
-			sub_channel_removed.emit(removed_channel.channel_name)
+			channels.resize(channels.size() - 1)
+			sub_channel_removed.emit(self )
 
 
 func is_full() -> bool:
@@ -62,7 +64,7 @@ func read_single(channel: int = 0) -> float:
 	return channels[channel].read_single()
 
 
-func write_single(value: float, channel: int):
+func write_single(value: float, channel: int = 0):
 	channels[channel].write_single(value)
 
 
@@ -83,5 +85,5 @@ func set_buffer(new_buffer: PackedFloat32Array, channel: int):
 	channels[channel].set_buffer(new_buffer)
 
 
-func get_buffer(channel: int) -> PackedFloat32Array:
-	return channels[channel].get_buffer()
+func get_buffer(channel: int, flush_after := not ring_buffer) -> PackedFloat32Array:
+	return channels[channel].get_buffer(0, flush_after)

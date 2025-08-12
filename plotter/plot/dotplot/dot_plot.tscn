@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://blv2uug0en4f5"]
 
-[ext_resource type="Script" uid="uid://bhvg6f71s8lm8" path="res://addons/utils/plotter/dotplot/dot_plot.gd" id="1_3yagk"]
-[ext_resource type="Script" uid="uid://b0jlgmv6l7kdd" path="res://addons/utils/plotter/dotplot/renderer.gd" id="2_qcawa"]
+[ext_resource type="Script" uid="uid://bhvg6f71s8lm8" path="res://addons/utils/plotter/plot/dotplot/dot_plot.gd" id="1_3yagk"]
+[ext_resource type="Script" uid="uid://b0jlgmv6l7kdd" path="res://addons/utils/plotter/plot/dotplot/renderer.gd" id="2_qcawa"]
 
 [node name="Control" type="Control"]
 layout_mode = 3

@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://hsa83lys32tm"]
+
+[ext_resource type="Script" uid="uid://yjfjahjbqlhs" path="res://addons/utils/plotter/gui/channel_config.gd" id="1_8ayru"]
+[ext_resource type="PackedScene" uid="uid://bj6shlpr02ma3" path="res://addons/utils/plotter/gui/components/icon_button.tscn" id="2_6ltkx"]
+[ext_resource type="PackedScene" uid="uid://cluuflrbb3c0i" path="res://addons/utils/components/swiper/swiper.tscn" id="2_xs1wn"]
+[ext_resource type="Script" uid="uid://cxl0skyi3sm31" path="res://addons/utils/plotter/gui/components/toggle_label/toggle_label_list.gd" id="3_tw0u0"]
+
+[node name="Control" type="MarginContainer"]
+anchors_preset = -1
+offset_right = 63.0
+offset_bottom = 63.0
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+script = ExtResource("1_8ayru")
+
+[node name="MainContainer" type="BoxContainer" parent="."]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 2
+
+[node name="AverageSwiper" parent="MainContainer" instance=ExtResource("2_xs1wn")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(197.51, 0)
+layout_mode = 2
+label_text = "Average"
+range_max = 10.0
+val_exp = 3.0
+min_text = "Off"
+suffix = "s"
+
+[node name="ButtonVisible" parent="MainContainer" instance=ExtResource("2_6ltkx")]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(60.1, 60)
+layout_mode = 2
+size_flags_vertical = 1
+
+[node name="SubChannelList" type="BoxContainer" parent="MainContainer"]
+unique_name_in_owner = true
+layout_direction = 3
+layout_mode = 2
+alignment = 2
+script = ExtResource("3_tw0u0")

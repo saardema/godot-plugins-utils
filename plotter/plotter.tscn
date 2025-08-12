@@ -1,11 +1,14 @@
-[gd_scene load_steps=7 format=3 uid="uid://mg1muypmihai"]
+[gd_scene load_steps=9 format=3 uid="uid://mg1muypmihai"]
 
 [ext_resource type="Theme" uid="uid://b5xia4baq1lmi" path="res://addons/utils/plotter/plotter_theme.tres" id="1_mwoj7"]
 [ext_resource type="Script" uid="uid://bfdkd44bahp7t" path="res://addons/utils/plotter/plotter.gd" id="1_xt4dd"]
 [ext_resource type="Script" uid="uid://cw0tq4e5ojlfr" path="res://addons/utils/plotter/plotter_grid.gd" id="2_7q2c7"]
-[ext_resource type="PackedScene" uid="uid://blv2uug0en4f5" path="res://addons/utils/plotter/dotplot/dot_plot.tscn" id="3_mwoj7"]
-[ext_resource type="PackedScene" uid="uid://djllrtii1p722" path="res://addons/utils/plotter/gui/plotter_gui.tscn" id="4_xxi0i"]
-[ext_resource type="Script" uid="uid://7hvgildhldj1" path="res://addons/utils/plotter/plot.gd" id="6_5ju1o"]
+[ext_resource type="PackedScene" uid="uid://blv2uug0en4f5" path="res://addons/utils/plotter/plot/dotplot/dot_plot.tscn" id="3_mwoj7"]
+[ext_resource type="PackedScene" uid="uid://djllrtii1p722" path="res://addons/utils/plotter/gui/scenes/plotter_gui.tscn" id="4_xxi0i"]
+[ext_resource type="Script" uid="uid://bx2v4yhpcq636" path="res://addons/utils/plotter/plot/line_plot.gd" id="6_y6scc"]
+[ext_resource type="Script" uid="uid://c6bqbtrj4piek" path="res://addons/utils/plotter/oscilloscope.gd" id="7_5ju1o"]
+
+[sub_resource type="Texture2DRD" id="Texture2DRD_mwoj7"]
 
 [node name="Plotter" type="Control"]
 clip_contents = true
@@ -18,8 +21,6 @@ grow_vertical = 2
 focus_mode = 1
 theme = ExtResource("1_mwoj7")
 script = ExtResource("1_xt4dd")
-draw_mode = 2
-colors = Array[Color]([Color(0, 0.5019608, 0, 1), Color(1, 0.64705884, 0, 1), Color(0, 0.7, 0.16763301, 1), Color(0, 0.23948912, 0.7, 1), Color(0.6089001, 0, 0.7, 1), Color(0.7, 0.24988355, 0, 1), Color(0.2785994, 0.7, 0, 1), Color(0, 0.5123401, 0.7, 1), Color(0.4747879, 0, 0.7, 1), Color(0.7, 0.31117818, 0, 1)])
 
 [node name="Grid" type="Control" parent="."]
 custom_minimum_size = Vector2(15.99, 9.86)
@@ -37,11 +38,16 @@ script = ExtResource("2_7q2c7")
 [node name="DotPlot" parent="." instance=ExtResource("3_mwoj7")]
 layout_mode = 1
 mouse_filter = 1
-dot_size = 31.369999999995343
-default_alpha = 0.057
-color_a = Color(0, 0.67058825, 0.80784315, 0.057)
-color_b = Color(0.89254296, 0.00045916735, 0.8554837, 0.057)
-persistence = true
+base_size = 19.660000000003492
+
+[node name="TimeGraphs" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="PlotsContainer" type="Control" parent="."]
 unique_name_in_owner = true
@@ -54,16 +60,36 @@ grow_vertical = 2
 size_flags_horizontal = 3
 mouse_behavior_recursive = 1
 
-[node name="Plot" type="Control" parent="PlotsContainer"]
+[node name="LinePlot" type="Control" parent="PlotsContainer"]
 unique_name_in_owner = true
-visible = false
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("6_5ju1o")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("6_y6scc")
 
 [node name="PlotterGUI" parent="." instance=ExtResource("4_xxi0i")]
 layout_mode = 1
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 0
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_5ju1o")
+
+[node name="TextureRect" type="TextureRect" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("Texture2DRD_mwoj7")

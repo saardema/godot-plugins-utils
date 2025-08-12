@@ -1,4 +1,4 @@
-@tool
+# @tool
 extends Control
 
 var grid_pos := Vector2()
@@ -16,14 +16,15 @@ var y_label_width: int
 var grid_contrast: float
 var shift_fract: Vector2
 var shift: Vector2i
-var x_axis: GridAxisConfig
-var y_axis: GridAxisConfig
+var x_axis := GridAxisConfig.new(size.x, 1, 0.25)
+var y_axis := GridAxisConfig.new(size.y, 1, 0.25)
 var _x_indicators: Array
 var _y_indicators: Array
 var plot_mode: Plotter.GridMode
 var magnitude: Vector2
 var unit: Vector2
 var ticks: Vector2
+
 
 func set_grid(
 		plot_pos: Vector2,
@@ -114,8 +115,6 @@ func _draw() -> void:
 	var i := -1
 	var line_pos: float = 0
 
-	draw_rect(Rect2(Vector2.ZERO, size), indicator_label_color)
-
 	for axis in [x_axis, y_axis]:
 		i += 1
 		for n in axis.count * axis.ticks:
@@ -127,10 +126,12 @@ func _draw() -> void:
 			else:
 				start = Vector2(0, line_pos)
 				end = Vector2(size.x, line_pos)
-			if line_pos > size[i]: break
+			if line_pos >= size[i]: break
 
 			var significance: float = 1
-			var value: float = - float(n) / axis.ticks * axis.unit * axis.magnitude
+			var value: float = float(-n) / axis.ticks * axis.unit * axis.magnitude
+
+			if plot_mode == Plotter.GridMode.Time and axis == x_axis and value == 0: break
 
 			if value == 0: significance = 5
 			elif fmod(n, axis.milestone * axis.ticks) == 0: significance = 3
