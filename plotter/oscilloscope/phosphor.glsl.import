@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://dgnijx4p7ry43"
+path="res://.godot/imported/phosphor.glsl-df3f10b35a1d380efd74a8b2b4024788.res"
+
+[deps]
+
+source_file="res://addons/utils/plotter/oscilloscope/phosphor.glsl"
+dest_files=["res://.godot/imported/phosphor.glsl-df3f10b35a1d380efd74a8b2b4024788.res"]
+
+[params]
+

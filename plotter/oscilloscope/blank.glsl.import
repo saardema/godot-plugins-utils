@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://cry37cnhm03qi"
+path="res://.godot/imported/blank.glsl-97834be07fa7624a0c4ad02274d24c52.res"
+
+[deps]
+
+source_file="res://addons/utils/plotter/oscilloscope/blank.glsl"
+dest_files=["res://.godot/imported/blank.glsl-97834be07fa7624a0c4ad02274d24c52.res"]
+
+[params]
+

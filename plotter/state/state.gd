@@ -26,7 +26,7 @@ func _init(plotter_ref: Plotter):
 			},
 			{
 				"feature": Feature.Y,
-				"channel_name": "Output",
+				"channel_name": "Expected",
 				"sub_channel": 0
 			},
 			{

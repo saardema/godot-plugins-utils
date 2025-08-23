@@ -15,9 +15,10 @@ const Connection = preload('connection/connection.gd')
 const State = preload('state/state.gd')
 
 @onready var dot_plot: DotPlot = $DotPlot
+@onready var line_plot: Control = %LinePlot
+@onready var oscilloscope: Control = %Oscilloscope
 @onready var grid: Control = $Grid
 @onready var plotter_gui: MarginContainer = $PlotterGUI
-@onready var line_plot: Control = %LinePlot
 @onready var time_graph_container: Control = %TimeGraphs
 var time_graphs: Dictionary[StringName, TimeGraph]
 
@@ -60,10 +61,15 @@ const draw_mode_features: Dictionary[DrawMode, Array] = {
 	],
 	DrawMode.Oscilloscope: [
 		Feature.X,
-		Feature.Y
+		Feature.Y,
+		Feature.Alpha
 	]
-
 }
+
+var active_plot: Plot:
+	get:
+		var plots = [null, line_plot, dot_plot, oscilloscope]
+		return plots[draw_mode]
 
 @export_group('Plot')
 @export var draw_mode: DrawMode:
@@ -92,6 +98,7 @@ const draw_mode_features: Dictionary[DrawMode, Array] = {
 	set(v): if line_plot: line_plot.color_mode = v
 
 #endregion Visual
+
 
 #region Grid
 
@@ -207,6 +214,7 @@ func _on_draw_mode_changed():
 	if time_graph_container: time_graph_container.visible = draw_mode == DrawMode.Time
 	if dot_plot: dot_plot.visible = draw_mode == DrawMode.Dots
 	if line_plot: line_plot.visible = draw_mode == DrawMode.Lines
+	if oscilloscope: oscilloscope.visible = draw_mode == DrawMode.Oscilloscope
 
 	_update_grid()
 	draw_mode_changed.emit()
@@ -222,7 +230,7 @@ func fit_scale_to_size(min_scale: float):
 
 
 func clear():
-	dot_plot.clear()
+	if active_plot: active_plot.clear()
 
 func _on_resize():
 	_update_grid()
@@ -265,23 +273,24 @@ func _physics_process(delta: float):
 
 
 func _process(delta: float):
-	if draw_mode == DrawMode.Lines or draw_mode == DrawMode.Dots:
-		var target_plot: Plot = [line_plot, dot_plot][draw_mode - 1]
+	if active_plot:
 		var feature_list = draw_mode_features[draw_mode]
 		var packet_size := 0
 		var packet: Dictionary[Feature, PackedFloat32Array]
 		var connections = state.find({'feature': feature_list}, true)
+
+		active_plot.update_transform(plot_scale, plot_pos)
 
 		for connection in connections:
 			if connection['feature'] in feature_list:
 				packet[connection['feature']] = connection['channel'].get_buffer(connection['sub_channel'], false)
 				packet_size = max(packet_size, packet[connection['feature']].size())
 
-		var hash = packet.hash()
-		if packet_size > 0 and hash != last_packet_hash:
-			target_plot.plot(packet, packet_size)
+		# var hash = packet.hash()
+		# if packet_size > 0 and hash != last_packet_hash:
+			# last_packet_hash = hash
+		active_plot.plot(packet, packet_size)
 
-		target_plot.update_transform(plot_scale, plot_pos)
 
 #endregion Virtuals
 
@@ -425,7 +434,6 @@ func _on_mouse_motion(event: InputEventMouseMotion):
 
 
 #region Helpers
-
 
 func get_or_add_time_graph(channel_name: StringName, sub_channel: int) -> TimeGraph:
 	var id: StringName = &"%s_%d" % [channel_name, sub_channel]

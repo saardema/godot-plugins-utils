@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://o43aaaxvk27m"
+path="res://.godot/imported/diffuse.glsl-f9dade409579dd7d3c2381a97656377e.res"
+
+[deps]
+
+source_file="res://addons/utils/plotter/oscilloscope/diffuse.glsl"
+dest_files=["res://.godot/imported/diffuse.glsl-f9dade409579dd7d3c2381a97656377e.res"]
+
+[params]
+
